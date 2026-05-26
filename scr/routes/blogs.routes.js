@@ -3,7 +3,7 @@ import Router from 'express'
 
 const router = Router()
 
-router.get('/', blogs.create)
+router.post('/', blogs.create)
 
 export default router
 

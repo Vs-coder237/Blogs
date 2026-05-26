@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
@@ -16,7 +16,7 @@ datasource db {
 
 model blogs {
   id          String @id @default(uuid()) @map("_id")
-  Auto        String
+  Author      String
   Title       String @unique
   Description String
   postAt      DateTime @default(now())
