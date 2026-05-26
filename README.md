@@ -1,0 +1,1 @@
+Last thing done was to initialise the project with prisma using the command npx prisma init
