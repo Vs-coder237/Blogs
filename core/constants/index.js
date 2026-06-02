@@ -5,7 +5,8 @@ const httpCode = {
     CREATED: 201,
     UNAUTHORISED: 401,
     NO_CONTENT: 204,
-    BAD_REQUEST: 400
+    BAD_REQUEST: 400,
+    FORBIDEN: 403
 }
 
 export default httpCode
