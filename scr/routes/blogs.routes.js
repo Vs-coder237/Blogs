@@ -6,8 +6,8 @@ const router = Router()
 router.post('/', blogs.create)
 router.get('/', blogs.readAll)
 router.get('/:id', blogs.findBlogById)
-router.get('/:id', blogs.Update)
-router.get('/:id', blogs.Delete)
+router.put('/:id', blogs.Update)
+router.delete('/:id', blogs.Delete)
 
 export default router
 

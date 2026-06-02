@@ -36,7 +36,7 @@ const blogs = {
             if (!blog){
                 return res.status(httpCode.NOT_FOUND).json({message: 'No blog found'})
             }
-            return res.status(httpCode.OK).json(blogs)
+            return res.status(httpCode.OK).json(blog)
         } catch (error) {
             res.status(httpCode.INTERNAL_SERVER_ERROR).json({error: 'server error'})
         }
@@ -49,9 +49,9 @@ const blogs = {
                 where: {id}
             })
             if (!blog) {
-                return res.send(httpCode.NOT_FOUND).json({message: 'no blog found'})
+                return res.status(httpCode.NOT_FOUND).json({message: 'no blog found'})
             }
-            return res.send(httpCode.OK).json(blog)
+            return res.status(httpCode.OK).json(blog)
         } catch (error) {
             return res.send(httpCode.INTERNAL_SERVER_ERROR).json({error: 'server error'})
         }
@@ -67,7 +67,7 @@ const blogs = {
             })
 
             if (!exist) {
-                return res.send(httpCode.NOT_FOUND).json({message: 'blog not found'})
+                return res.status(httpCode.NOT_FOUND).json({message: 'blog not found'})
             }
 
             const updateBlog = await prisma.blogs.update({
@@ -94,14 +94,14 @@ const blogs = {
             })
 
             if (!exist) {
-                return res.send(httpCode.NOT_FOUND).json({message: 'blog not found'})
+                return res.status(httpCode.NOT_FOUND).json({message: 'blog not found'})
             }
 
             await prisma.blogs.delete({
                 where: {id}
             })
 
-            return res.status(HttpCode.OK).json({message: 'blog supprime avec succes'})
+            return res.status(HttpCode.OK).json({message: 'successfully deleted the blog'})
 
         } catch (error) {
             return res.status(HttpCode.INTERNAL_SERVER_ERROR).json({ error: "Erreur lors de la mise à jour du blog"})
