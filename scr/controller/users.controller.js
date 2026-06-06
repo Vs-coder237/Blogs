@@ -1,7 +1,11 @@
 import httpCode from "../../core/constants/index.js"
 import prisma from "../lib/prisma.js"
 import {v4 as uuidv4} from "uuid"
+import bcrypt from 'bcrypt'
 import { mailFormat } from "../services/email.service.js"
+
+
+
 
 const Authentication = {
     signUp: async (req, res) => {
@@ -16,16 +20,16 @@ const Authentication = {
             })
 
             if (emailExist) {
-                res.send(httpCode.BAD_REQUEST).json({message: 'this email already exist'})
+                res.status(httpCode.BAD_REQUEST).json({message: 'this email already exist'})
             }
 
-            console.log("i love programming")
+            const hashedPassword = await bcrypt.hash(password, 10)
             const newUser = await prisma.Users.create({
                 data: {
                     id: uuidv4(),
                     name,
                     email,
-                    password,
+                    password: hashedPassword,
                     role: role || "User"
                 }
             })
@@ -42,7 +46,7 @@ const Authentication = {
         }
     },
 
-    readAll: async (req, res) => {
+    ReadAll: async (req, res) => {
         try {
             const user = await prisma.Users.findMany({
                 orderBy: {postAt: 'desc'}
@@ -56,7 +60,7 @@ const Authentication = {
         }
     },
 
-    findBlogById: async (req, res) => {
+    findUserById: async (req, res) => {
         try {
             const {id} = req.params
             const user = await prisma.Users.findUnique({
@@ -71,25 +75,17 @@ const Authentication = {
         }
     },
 
-    Update: async (req, res) => {
+    updateUser: async (req, res) => {
         try {
             const {id} = req.params
             const {name, email, password} = req.body
 
-            const exist = await prisma.Users.findUnique({
-                where: {id}
-            })
-
-            if (exist) {
-                return res.status(httpCode.BAD_REQUEST).json({message: 'the email already exist'})
-            }
-
-            const updateUser = await prisma.blogs.update({
+            const updateUser = await prisma.Users.update({
                 where: {id},
                 data: {
-                    name: name ?? exist.name,
-                    email: email ?? exist.email,
-                    password: password ?? exist.password
+                    name: name ?? name,
+                    email: email ?? email,
+                    password: password ?? password
                 }
             })
 
@@ -99,7 +95,7 @@ const Authentication = {
         }
     },
 
-    Delete: async (req, res) => {
+    deleteUser: async (req, res) => {
         try {
             const {id} = req.params
 
@@ -108,17 +104,17 @@ const Authentication = {
             })
 
             if (!exist) {
-                return res.status(httpCode.NOT_FOUND).json({message: 'blog not found'})
+                return res.status(httpCode.NOT_FOUND).json({message: 'User not found'})
             }
 
             await prisma.Users.delete({
                 where: {id}
             })
 
-            return res.status(HttpCode.OK).json({message: 'successfully deleted the blog'})
+            return res.status(httpCode.OK).json({message: 'successfully deleted the User'})
 
         } catch (error) {
-            return res.status(HttpCode.INTERNAL_SERVER_ERROR).json({ error: "Erreur lors de la mise à jour du blog"})
+            return res.status(httpCode.INTERNAL_SERVER_ERROR).json({ error: "Error while deleting the User"})
         }
     }
 
