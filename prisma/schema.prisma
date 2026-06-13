@@ -14,14 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model blogs {
-  id          String @id @default(uuid()) @map("_id")
-  Author      String
-  Title       String @unique
-  Description String
-  postAt      DateTime @default(now())
-}
-
 enum Role {
   User
   Admin
@@ -34,4 +26,42 @@ model Users {
   password  String
   role      Role @default(User)
   createdAt DateTime @default(now())
+
+  //relationship with blogs
+  blog      blogs[]  
+
+  //relationship with comment
+  comment   Comment[]
 }
+
+model blogs {
+  id          String @id @default(uuid()) @map("_id")
+  Author      String
+  Title       String @unique
+  Description String
+  postAt      DateTime @default(now())
+
+  //relationship with comment
+  comments    Comment[]
+
+  //relationship with users
+  userId      String
+  User        Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model Comment {
+  id           String @id @default(uuid()) @map("_id")
+  content      String
+  createdAt    DateTime @default(now())
+
+  //relationship with blogs
+  blogId      String
+  blogs       blogs @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  //relationship with user
+  userId      String
+  user        Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+

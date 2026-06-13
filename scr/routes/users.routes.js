@@ -4,6 +4,7 @@ import { Router } from "express";
 const userRouter = Router()
 
 userRouter.post("/", Authentication.signUp)
+userRouter.post('/signin', Authentication.signIn)
 userRouter.get("/", Authentication.ReadAll)
 userRouter.get('/:id', Authentication.findUserById)
 userRouter.put('/:id', Authentication.updateUser)

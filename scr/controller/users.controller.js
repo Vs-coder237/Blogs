@@ -1,11 +1,28 @@
-import httpCode from "../../core/constants/index.js"
+import httpCode from "../constants/index.js"
 import prisma from "../lib/prisma.js"
 import {v4 as uuidv4} from "uuid"
 import bcrypt from 'bcrypt'
 import { mailFormat } from "../services/email.service.js"
+import jwt from 'jsonwebtoken'
 
 
+const generateAccessToken = (user) => {
+    return jwt.sign({
+        id: user.id,
+        role: user.role},
+        process.env.JWT_ACCESS_TOKEN,
+        {expiresIn: '15m'}
+    )
+}
 
+const generateRefreshToken = (user) => {
+    return jwt.sign({
+        id: user.id,
+        role: user.role},
+        process.env.JWT_REFRESH_TOKEN,
+        {expiresIn: '7d'}
+    )
+}
 
 const Authentication = {
     signUp: async (req, res) => {
@@ -44,6 +61,44 @@ const Authentication = {
         } catch (error) {
             res.status(httpCode.INTERNAL_SERVER_ERROR).json({error: 'server error'})
         }
+    },
+
+    signIn: async (req, res) => {
+        try {
+            const {email, password} = req.body
+        
+            if (!email || !password) {
+                res.status(httpCode.BAD_REQUEST).json({message: 'enter all fields'})
+            }
+
+            const user = await prisma.Users.findUnique({where: {email}})
+
+            const verifyPassword = await bcrypt.compare(password, user.password)
+
+            if (!verifyPassword) {
+                return res.status(httpCode.NOT_FOUND).json({message: 'password incorrect'})
+            }
+
+            const accessToken = generateAccessToken(user)
+            const refreshToken = generateRefreshToken(user)
+
+            await prisma.Users.update({
+                where: {id: user.id},
+                data: {refreshToken}
+            })
+
+            return res.status(httpCode.OK).json({
+                message: 'successfully connected',
+                token: accessToken, refreshToken,
+                user: {id: user.id}, email: user.email, role: user.role
+            })
+
+
+        } catch (error) {
+            return res.status(httpCode.INTERNAL_SERVER_ERROR).json({message: 'internal server error'})
+        }
+
+
     },
 
     ReadAll: async (req, res) => {

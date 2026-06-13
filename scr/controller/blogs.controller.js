@@ -1,4 +1,4 @@
-import httpCode from "../../core/constants/index.js"
+import httpCode from "../constants/index.js"
 import prisma from "../lib/prisma.js"
 import {v4 as uuidv4} from "uuid"
 
